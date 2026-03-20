@@ -300,16 +300,31 @@ python3 cliente.py 192.168.1.1
 Saída esperada:
 
 ```
-Conectado ao servidor gRPC em 192.168.1.1:50051
+Conectado ao servidor gRPC em 192.168.100.1:50051
 
 ========================================
-RPC UNÁRIO - Operações Básicas
+COMPARACAO: Protobuf vs JSON
+========================================
+Objeto Python: numero1=10.0, numero2=5.0
+
+--- Protobuf (binario) ---
+  Bytes: b'\t\x00\x00\x00\x00\x00\x00$@\x11\x00\x00\x00\x00\x00\x00\x14@'
+  Tamanho: 18 bytes
+
+--- JSON (texto) ---
+  String: {"numero1": 10, "numero2": 5}
+  Tamanho: 29 bytes
+
+Protobuf e 1.6x menor que JSON!
+
+========================================
+RPC UNARIO - Operacoes Basicas
 ========================================
 Soma: 10 + 5 = 15.0
-Subtração: 10 - 5 = 5.0
-Multiplicação: 10 \\\* 5 = 50.0
-Divisão: 10 / 5 = 2.0
-Erro esperado (divisão por zero): Divisão por zero não é permitida!
+Subtracao: 10 - 5 = 5.0
+Multiplicacao: 10 * 5 = 50.0
+Divisao: 10 / 5 = 2.0
+Erro esperado (divisao por zero): Divisao por zero nao e permitida!
 
 ========================================
 SERVER STREAMING - Tabuada
@@ -317,10 +332,16 @@ SERVER STREAMING - Tabuada
 Tabuada do 7:
   7.0 x 1 = 7.0
   7.0 x 2 = 14.0
-  ...
+  7.0 x 3 = 21.0
+  7.0 x 4 = 28.0
+  7.0 x 5 = 35.0
+  7.0 x 6 = 42.0
+  7.0 x 7 = 49.0
+  7.0 x 8 = 56.0
+  7.0 x 9 = 63.0
   7.0 x 10 = 70.0
 
-Todas as operações concluídas!
+Todas as operacoes concluidas!
 ```
 
 `Neste ponto o cliente deverá ter se comunicado com o servidor remoto via gRPC e recebido todos os resultados.`
