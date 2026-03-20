@@ -109,7 +109,7 @@ service Calculadora {
 ### Passo 2: Gerar o Código Python a Partir do `.proto` 🔨
 
 ```bash
-python3 -m grpc\\\_tools.protoc -I protos/ --python\\\_out=. --grpc\\\_python\\\_out=. protos/calculadora.proto
+python3 -m grpc_tools.protoc -I protos/ --python_out=. --grpc_python_out=. protos/calculadora.proto
 ```
 
 Esse comando gera dois arquivos:
