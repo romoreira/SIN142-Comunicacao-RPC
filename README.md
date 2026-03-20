@@ -195,6 +195,7 @@ import grpc
 import calculadora_pb2
 import calculadora_pb2_grpc
 import sys
+import json
 
 def executar():
     host = sys.argv[1] if len(sys.argv) > 1 else 'localhost'
@@ -204,6 +205,28 @@ def executar():
     print(f"Conectado ao servidor gRPC em {host}:50051\n")
 
     print("=" * 40)
+    print("COMPARACAO: Protobuf vs JSON")
+    print("=" * 40)
+
+    req = calculadora_pb2.OperacaoRequest(numero1=10, numero2=5)
+    dados_protobuf = req.SerializeToString()
+
+    dados_json = json.dumps({"numero1": 10, "numero2": 5})
+    dados_json_bytes = dados_json.encode("utf-8")
+
+    print(f"Objeto Python: numero1={req.numero1}, numero2={req.numero2}")
+    print()
+    print(f"--- Protobuf (binario) ---")
+    print(f"  Bytes: {dados_protobuf}")
+    print(f"  Tamanho: {len(dados_protobuf)} bytes")
+    print()
+    print(f"--- JSON (texto) ---")
+    print(f"  String: {dados_json}")
+    print(f"  Tamanho: {len(dados_json_bytes)} bytes")
+    print()
+    print(f"Protobuf e {len(dados_json_bytes) / len(dados_protobuf):.1f}x menor que JSON!")
+
+    print(f"\n{'=' * 40}")
     print("RPC UNARIO - Operacoes Basicas")
     print("=" * 40)
 
