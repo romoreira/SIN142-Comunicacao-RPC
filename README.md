@@ -114,8 +114,8 @@ python3 -m grpc_tools.protoc -I protos/ --python_out=. --grpc_python_out=. proto
 
 Esse comando gera dois arquivos:
 
-* `calculadora\\\_pb2.py` — Classes das mensagens (OperacaoRequest, ResultadoResponse, etc.)
-* `calculadora\\\_pb2\\\_grpc.py` — Classes do servidor e stubs do cliente
+* `calculadora_pb2.py` — Classes das mensagens (OperacaoRequest, ResultadoResponse, etc.)
+* `calculadora_pb2_grpc.py` — Classes do servidor e stubs do cliente
 
 \---
 
@@ -126,61 +126,61 @@ Crie o arquivo `servidor.py`:
 ```python
 import grpc
 from concurrent import futures
-import calculadora\\\_pb2
-import calculadora\\\_pb2\\\_grpc
+import calculadora_pb2
+import calculadora_pb2_grpc
 import time
 
-class CalculadoraServicer(calculadora\\\_pb2\\\_grpc.CalculadoraServicer):
-    """Implementação do serviço Calculadora definido no .proto"""
+class CalculadoraServicer(calculadora_pb2_grpc.CalculadoraServicer):
+    """Implementacao do servico Calculadora definido no .proto"""
 
     def Somar(self, request, context):
         resultado = request.numero1 + request.numero2
-        print(f"\\\[Servidor] Somar: {request.numero1} + {request.numero2} = {resultado}")
-        return calculadora\\\_pb2.ResultadoResponse(resultado=resultado, operacao="soma")
+        print(f"[Servidor] Somar: {request.numero1} + {request.numero2} = {resultado}")
+        return calculadora_pb2.ResultadoResponse(resultado=resultado, operacao="soma")
 
     def Subtrair(self, request, context):
         resultado = request.numero1 - request.numero2
-        print(f"\\\[Servidor] Subtrair: {request.numero1} - {request.numero2} = {resultado}")
-        return calculadora\\\_pb2.ResultadoResponse(resultado=resultado, operacao="subtração")
+        print(f"[Servidor] Subtrair: {request.numero1} - {request.numero2} = {resultado}")
+        return calculadora_pb2.ResultadoResponse(resultado=resultado, operacao="subtracao")
 
     def Multiplicar(self, request, context):
-        resultado = request.numero1 \\\* request.numero2
-        print(f"\\\[Servidor] Multiplicar: {request.numero1} \\\* {request.numero2} = {resultado}")
-        return calculadora\\\_pb2.ResultadoResponse(resultado=resultado, operacao="multiplicação")
+        resultado = request.numero1 * request.numero2
+        print(f"[Servidor] Multiplicar: {request.numero1} * {request.numero2} = {resultado}")
+        return calculadora_pb2.ResultadoResponse(resultado=resultado, operacao="multiplicacao")
 
     def Dividir(self, request, context):
         if request.numero2 == 0:
-            context.set\\\_code(grpc.StatusCode.INVALID\\\_ARGUMENT)
-            context.set\\\_details("Divisão por zero não é permitida!")
-            return calculadora\\\_pb2.ResultadoResponse()
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details("Divisao por zero nao e permitida!")
+            return calculadora_pb2.ResultadoResponse()
         resultado = request.numero1 / request.numero2
-        print(f"\\\[Servidor] Dividir: {request.numero1} / {request.numero2} = {resultado}")
-        return calculadora\\\_pb2.ResultadoResponse(resultado=resultado, operacao="divisão")
+        print(f"[Servidor] Dividir: {request.numero1} / {request.numero2} = {resultado}")
+        return calculadora_pb2.ResultadoResponse(resultado=resultado, operacao="divisao")
 
     def Tabuada(self, request, context):
-        """Server Streaming: retorna a tabuada do número recebido"""
-        print(f"\\\[Servidor] Gerando tabuada do {request.numero}")
+        """Server Streaming: retorna a tabuada do numero recebido"""
+        print(f"[Servidor] Gerando tabuada do {request.numero}")
         for i in range(1, 11):
-            resultado = request.numero \\\* i
-            time.sleep(0.5)  # Simula processamento
-            yield calculadora\\\_pb2.ResultadoResponse(
+            resultado = request.numero * i
+            time.sleep(0.5)
+            yield calculadora_pb2.ResultadoResponse(
                 resultado=resultado,
                 operacao=f"{request.numero} x {i}"
             )
 
 def servir():
-    servidor = grpc.server(futures.ThreadPoolExecutor(max\\\_workers=10))
-    calculadora\\\_pb2\\\_grpc.add\\\_CalculadoraServicer\\\_to\\\_server(CalculadoraServicer(), servidor)
-    servidor.add\\\_insecure\\\_port('\\\[::]:50051')
+    servidor = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    calculadora_pb2_grpc.add_CalculadoraServicer_to_server(CalculadoraServicer(), servidor)
+    servidor.add_insecure_port('[::]:50051')
     servidor.start()
     print("Servidor gRPC rodando na porta 50051...")
     try:
-        servidor.wait\\\_for\\\_termination()
+        servidor.wait_for_termination()
     except KeyboardInterrupt:
         servidor.stop(0)
-        print("\\\\nServidor encerrado.")
+        print("\nServidor encerrado.")
 
-if \\\_\\\_name\\\_\\\_ == '\\\_\\\_main\\\_\\\_':
+if __name__ == '__main__':
     servir()
 ```
 
@@ -192,54 +192,50 @@ Crie o arquivo `cliente.py`:
 
 ```python
 import grpc
-import calculadora\\\_pb2
-import calculadora\\\_pb2\\\_grpc
+import calculadora_pb2
+import calculadora_pb2_grpc
 import sys
 
 def executar():
-    # Conectar ao servidor gRPC (altere o IP conforme necessário)
-    host = sys.argv\\\[1] if len(sys.argv) > 1 else 'localhost'
-    canal = grpc.insecure\\\_channel(f'{host}:50051')
-    stub = calculadora\\\_pb2\\\_grpc.CalculadoraStub(canal)
+    host = sys.argv[1] if len(sys.argv) > 1 else 'localhost'
+    canal = grpc.insecure_channel(f'{host}:50051')
+    stub = calculadora_pb2_grpc.CalculadoraStub(canal)
 
-    print(f"Conectado ao servidor gRPC em {host}:50051\\\\n")
+    print(f"Conectado ao servidor gRPC em {host}:50051\n")
 
-    # === RPC Unário ===
-    print("=" \\\* 40)
-    print("RPC UNÁRIO - Operações Básicas")
-    print("=" \\\* 40)
+    print("=" * 40)
+    print("RPC UNARIO - Operacoes Basicas")
+    print("=" * 40)
 
-    response = stub.Somar(calculadora\\\_pb2.OperacaoRequest(numero1=10, numero2=5))
+    response = stub.Somar(calculadora_pb2.OperacaoRequest(numero1=10, numero2=5))
     print(f"Soma: 10 + 5 = {response.resultado}")
 
-    response = stub.Subtrair(calculadora\\\_pb2.OperacaoRequest(numero1=10, numero2=5))
-    print(f"Subtração: 10 - 5 = {response.resultado}")
+    response = stub.Subtrair(calculadora_pb2.OperacaoRequest(numero1=10, numero2=5))
+    print(f"Subtracao: 10 - 5 = {response.resultado}")
 
-    response = stub.Multiplicar(calculadora\\\_pb2.OperacaoRequest(numero1=10, numero2=5))
-    print(f"Multiplicação: 10 \\\* 5 = {response.resultado}")
+    response = stub.Multiplicar(calculadora_pb2.OperacaoRequest(numero1=10, numero2=5))
+    print(f"Multiplicacao: 10 * 5 = {response.resultado}")
 
-    response = stub.Dividir(calculadora\\\_pb2.OperacaoRequest(numero1=10, numero2=5))
-    print(f"Divisão: 10 / 5 = {response.resultado}")
+    response = stub.Dividir(calculadora_pb2.OperacaoRequest(numero1=10, numero2=5))
+    print(f"Divisao: 10 / 5 = {response.resultado}")
 
-    # Testando divisão por zero (tratamento de erro)
     try:
-        response = stub.Dividir(calculadora\\\_pb2.OperacaoRequest(numero1=10, numero2=0))
+        response = stub.Dividir(calculadora_pb2.OperacaoRequest(numero1=10, numero2=0))
     except grpc.RpcError as e:
-        print(f"Erro esperado (divisão por zero): {e.details()}")
+        print(f"Erro esperado (divisao por zero): {e.details()}")
 
-    # === Server Streaming ===
-    print(f"\\\\n{'=' \\\* 40}")
+    print(f"\n{'=' * 40}")
     print("SERVER STREAMING - Tabuada")
-    print("=" \\\* 40)
+    print("=" * 40)
 
     print("Tabuada do 7:")
-    responses = stub.Tabuada(calculadora\\\_pb2.NumeroRequest(numero=7))
+    responses = stub.Tabuada(calculadora_pb2.NumeroRequest(numero=7))
     for response in responses:
         print(f"  {response.operacao} = {response.resultado}")
 
-    print("\\\\nTodas as operações concluídas!")
+    print("\nTodas as operacoes concluidas!")
 
-if \\\_\\\_name\\\_\\\_ == '\\\_\\\_main\\\_\\\_':
+if __name__ == '__main__':
     executar()
 ```
 
@@ -253,7 +249,7 @@ Clone o repositório e gere os arquivos necessários:
 git clone https://github.com/romoreira/SIN142-ComunicacaoGRPC.git
 cd SIN142-ComunicacaoGRPC
 pip3 install grpcio grpcio-tools
-python3 -m grpc\\\_tools.protoc -I protos/ --python\\\_out=. --grpc\\\_python\\\_out=. protos/calculadora.proto
+python3 -m grpc_tools.protoc -I protos/ --python_out=. --grpc_python_out=. protos/calculadora.proto
 ```
 
 \---
