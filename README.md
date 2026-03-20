@@ -46,7 +46,7 @@ pip3 install grpcio grpcio-tools
 Verificar instalação:
 
 ```bash
-python3 -c "import grpc; print(grpc.\\\_\\\_version\\\_\\\_)"
+python3 -c "import grpc; print(grpc.__version__)"
 ```
 
 \---
